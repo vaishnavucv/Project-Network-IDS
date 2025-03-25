@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  ids:
+    build: ./ids
+    container_name: ids
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+    networks:
+      customnet:
+        ipv4_address: 172.20.0.2
+
+  client:
+    build: ./client
+    container_name: client
+    privileged: true
+    depends_on:
+      - ids
+    networks:
+      customnet:
+        ipv4_address: 172.20.0.3
+
+  kalilinux:
+    build: ./kalilinux
+    container_name: attacker
+    privileged: true
+    depends_on:
+      - ids
+    networks:
+      customnet:
+        ipv4_address: 172.20.0.4
+
+networks:
+  customnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
